@@ -18,10 +18,7 @@ public class CreditsController {
     }
 
     @PostMapping("/checkAndCalculate")
-    public ResponseEntity<CreditResponseDto> checkAndCalculate(@RequestBody CreditRequestDto creditRequestDto) {
-        if (!creditService.abilityToPay(creditRequestDto)) {
-            throw new ApiRequestException("You can't afford this kind of loan");
-        }
+    public ResponseEntity<CreditResponseDto> checkAndCalculate(@RequestBody CreditRequestDto creditRequestDto) throws ApiRequestException {
       return creditService.calculateLoan(creditRequestDto);
     }
 }

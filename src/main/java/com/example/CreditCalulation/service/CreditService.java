@@ -1,5 +1,6 @@
 package com.example.CreditCalulation.service;
 
+import com.example.CreditCalulation.exception.ApiRequestException;
 import com.example.CreditCalulation.model.CreditRequestDto;
 import com.example.CreditCalulation.model.CreditResponseDto;
 import org.springframework.http.HttpStatus;
@@ -16,7 +17,10 @@ import java.util.Map;
 
 @Service
 public class CreditService {
-    public ResponseEntity<CreditResponseDto> calculateLoan(CreditRequestDto creditRequestDto) {
+    public ResponseEntity<CreditResponseDto> calculateLoan(CreditRequestDto creditRequestDto) throws ApiRequestException {
+        if (!abilityToPay(creditRequestDto)) {
+            throw new ApiRequestException("U can't affort loan");
+        }
         CreditResponseDto creditResponseDto = new CreditResponseDto(abilityToPay(creditRequestDto),creditRequestDto.getLoanType(), ZonedDateTime.now(),interestCalculate(creditRequestDto));
         return new ResponseEntity<>(creditResponseDto, HttpStatus.OK);
     }
@@ -39,7 +43,7 @@ public class CreditService {
         return listOfStatements;
     }
 
-    public boolean abilityToPay(CreditRequestDto creditRequestDto) {
+    private boolean abilityToPay(CreditRequestDto creditRequestDto) {
        double statement = creditRequestDto.getLoanAmount() * 0.13 / 12;
        double mainDebt = creditRequestDto.getLoanAmount() / creditRequestDto.getTerm();
        return creditRequestDto.getSalary() > statement + mainDebt;
