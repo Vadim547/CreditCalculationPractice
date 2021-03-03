@@ -3,6 +3,7 @@ package com.example.CreditCalulation.service;
 import com.example.CreditCalulation.exception.ApiRequestException;
 import com.example.CreditCalulation.model.CreditRequestDto;
 import com.example.CreditCalulation.model.CreditResponseDto;
+import com.example.CreditCalulation.enums.LoanType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -10,10 +11,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.ZonedDateTime;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class CreditService {
@@ -30,10 +28,10 @@ public class CreditService {
         double loan = creditRequestDto.getLoanAmount();
         double mainDebt = creditRequestDto.getLoanAmount() / creditRequestDto.getTerm();
         double statement;
+        double coefficient = loanTypeInterestCoefficient(creditRequestDto);
         for (int count = 0; count < creditRequestDto.getTerm(); count++) {
-            System.out.println(mainDebt);
             Map<String, BigDecimal> statementObject = new HashMap<>();
-            statement = (loan * 0.13 / 12);
+            statement = (loan * coefficient / 12);
             statementObject.put("Remain to pay", new BigDecimal(loan).setScale(2,RoundingMode.CEILING));
             statementObject.put("Main Debt", new BigDecimal(mainDebt).setScale(2,RoundingMode.CEILING));
             statementObject.put("Interest mothly", new BigDecimal(statement).setScale(2,RoundingMode.CEILING));
@@ -44,10 +42,17 @@ public class CreditService {
     }
 
     private boolean abilityToPay(CreditRequestDto creditRequestDto) {
-       double statement = creditRequestDto.getLoanAmount() * 0.13 / 12;
+
+       double statement = creditRequestDto.getLoanAmount() * loanTypeInterestCoefficient(creditRequestDto) / 12;
        double mainDebt = creditRequestDto.getLoanAmount() / creditRequestDto.getTerm();
        return creditRequestDto.getSalary() > statement + mainDebt;
     }
+    private double loanTypeInterestCoefficient(CreditRequestDto creditRequestDto) {
+        String loanTypeUpperCased = creditRequestDto.getLoanType().toUpperCase(Locale.ROOT);
+        LoanType loanType = LoanType.valueOf(loanTypeUpperCased);
+       return loanType.getRate() / 100;
+    }
+
 }
 
 

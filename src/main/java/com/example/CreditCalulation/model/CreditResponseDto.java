@@ -17,7 +17,7 @@ public class CreditResponseDto {
     public CreditResponseDto() {
     }
 
-    public CreditResponseDto(boolean approved, String loanType, ZonedDateTime timestamp, List<Map<String, BigDecimal>> paymentStatement) {
+    public CreditResponseDto(boolean approved, String  loanType, ZonedDateTime timestamp, List<Map<String, BigDecimal>> paymentStatement) {
         this.approved = approved;
         this.timestamp = timestamp;
         this.paymentStatement = paymentStatement;
@@ -48,11 +48,11 @@ public class CreditResponseDto {
         this.paymentStatement = paymentStatement;
     }
 
-    public String getLoanType() {
+    public String  getLoanType() {
         return loanType;
     }
 
-    public void setLoanType(String loanType) {
+    public void setLoanType(String  loanType) {
         this.loanType = loanType;
     }
 }
